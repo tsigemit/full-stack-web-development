@@ -1,54 +1,40 @@
-
 import React, { useState } from 'react'
-import Note from './Note'
 
-const App = (props) => {
-    const [notes, setNotes] = useState(props.notes)
-    const [newNote, setNewNote] = useState('')
-    const [showAll, setShowAll] = useState(true)
+const App = () => {
+    const [persons, setPersons] = useState([{ name: 'Arto Hellas' }])
+    const [newName, setNewName] = useState('')
 
-    const addNote = (event) => {
+    const handleOnChange = (event) => {
+        setNewName(event.target.value)
+    }
+    const addPeson = (event) => {
         event.preventDefault()
-        const noteObject = {
-            content: newNote,
-            date: new Date().toISOString(),
-            important: Math.random() > 0.5,
-            id: notes.length + 1,
+        const nameObject = {
+            name:newName
         }
+        setPersons(persons.concat(nameObject))
 
-        setNotes(notes.concat(noteObject))
-        setNewNote('')
     }
-
-    const handleNoteChange = (event) => {
-        setNewNote(event.target.value)
-    }
-
-    const notesToShow = showAll
-        ? notes
-        : notes.filter(note => note.important)
-       
 
     return (
         <div>
-            <h1>Notes</h1>
-            <div>
-                <button onClick={() => setShowAll(!showAll)}>
-                    show {showAll ? 'important' : 'all'}
-                </button>
-            </div>
-            <ul>
-                {notesToShow.map((note, i) =>
-                    <Note key={i} note={note} />
-                )}
-            </ul>
-            <form onSubmit={addNote}>
-                <input
-                    value={newNote}
-                    onChange={handleNoteChange}
-                />
-                <button type="submit">save</button>
+            <h2>Phonebook</h2>
+            <form onSubmit={addPeson}>
+                <div>
+                    name: <input value={newName} 
+                                 onChange={handleOnChange}/>
+                </div>
+                <div>
+                    <button type="submit">add</button>
+                </div>
             </form>
+            <h2>Numbers</h2>
+            <div>
+                {persons.map(person =>{ return (
+                        <p key={person.name}>{person.name} </p> ) 
+                        }
+                        )}
+            </div>
         </div>
     )
 }
