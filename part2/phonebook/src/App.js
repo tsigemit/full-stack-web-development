@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
-
+import Persons from './components/Persons'
+import Filter from './components/Filter'
+import PersonForm from './components/PersonForm'
 
 const App = () => {
     const [persons, setPersons] = useState([
@@ -7,72 +9,52 @@ const App = () => {
                                             { name: 'Ada Lovelace', number: '39-44-5323523' },
                                             { name: 'Dan Abramov', number: '12-43-234345' },
                                             { name: 'Mary Poppendieck', number: '39-23-6423122' }
-                                         ])
-    const [newName, setNewName] = useState('')
-    const [newNumber, setNewNumber] = useState('')
-    const [search, setNameSearch] = useState('')
-    const [searchByName, setSearchByName] = useState([{}])
-    
+                                            ])   
 
-    const handleOnChangeName = (event) => {
-        setNewName(event.target.value)
+const [newName, setNewName] = useState('')
+const [newNumber, setNewNumber] = useState('')
+
+const handleOnChangeName = (event) => {
+    setNewName(event.target.value)
+}
+
+const handleOnChangeNumber = (event) => {
+    setNewNumber(event.target.value)
+}
+
+const addPeson = (event) => {
+    event.preventDefault()
+    const nameObject = {
+        name: newName,
+        number: newNumber
     }
-    const handleOnChangeNumber = (event) => {
-        setNewNumber(event.target.value)
-    }
-    const handleOnChangeSearch = (event) => {
-        setNameSearch(event.target.value)
-        const filtered = persons.filter(person => person.name.toLowerCase().startsWith(search))
-        setSearchByName(filtered)
-        
-    }
-    const addPeson = (event) => {
-        event.preventDefault()
-        const nameObject = {
-            name:newName,
-            number:newNumber
-        }
-        if(persons.find(peson => peson.name === newName))
-            alert(`${newName} is already added to phonebook`)
-        else
+    if (persons.find(peson => peson.name === newName))
+        alert(`${newName} is already added to phonebook`)
+    else
         setPersons(persons.concat(nameObject))
-     }
+}
+   
 
     return (
         <div>
             <h2>Phonebook</h2>
-            Filter shown with: <input value={search}
-                onChange={handleOnChangeSearch} /> 
-            <div>
-                {searchByName.map(person => {
-                    return (
-                        <p key={person.name}>{person.name} {person.number}</p>)
-                }
-                )}
-            </div>
+
+            <Filter persons ={persons}/>
+
             <h3>Add a new user</h3>
-            <form onSubmit={addPeson}>
-                <div>
-                    Name: <input value={newName} 
-                                 onChange={handleOnChangeName}/>
-                </div>
-                <div>
-                    Number: <input value={newNumber}
-                                   onChange={handleOnChangeNumber} />
-                </div>
-                <div>
-                    <button type="submit">add</button>
-                </div>
-            </form>
+
+            <PersonForm addPeson={addPeson}
+                        newName = {newName}
+                        newNumber={newNumber}
+                        handleOnChangeName={handleOnChangeName}
+                        handleOnChangeNumber={handleOnChangeNumber}
+                        />
+
             <h2>Numbers</h2>
-            <div>
-                {persons.map(person =>{ return (
-                    <p key={person.name}>{person.name} {person.number}</p> ) 
-                        }
-                        )}
-            </div>
+
+            <Persons persons={persons} />
         </div>
     )
 }
 
-export default   App
+export default App
