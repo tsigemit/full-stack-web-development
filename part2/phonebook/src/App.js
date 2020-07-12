@@ -1,24 +1,54 @@
-import React, { useState } from 'react'
 
-const App = () => {
-    const [persons, setPersons] = useState([
-        { name: 'Arto Hellas' }
-    ])
-    const [newName, setNewName] = useState('')
+import React, { useState } from 'react'
+import Note from './Note'
+
+const App = (props) => {
+    const [notes, setNotes] = useState(props.notes)
+    const [newNote, setNewNote] = useState('')
+    const [showAll, setShowAll] = useState(true)
+
+    const addNote = (event) => {
+        event.preventDefault()
+        const noteObject = {
+            content: newNote,
+            date: new Date().toISOString(),
+            important: Math.random() > 0.5,
+            id: notes.length + 1,
+        }
+
+        setNotes(notes.concat(noteObject))
+        setNewNote('')
+    }
+
+    const handleNoteChange = (event) => {
+        setNewNote(event.target.value)
+    }
+
+    const notesToShow = showAll
+        ? notes
+        : notes.filter(note => note.important)
+       
 
     return (
         <div>
-            <h2>Phonebook</h2>
-            <form>
-                <div>
-                    name: <input />
-                </div>
-                <div>
-                    <button type="submit">add</button>
-                </div>
+            <h1>Notes</h1>
+            <div>
+                <button onClick={() => setShowAll(!showAll)}>
+                    show {showAll ? 'important' : 'all'}
+                </button>
+            </div>
+            <ul>
+                {notesToShow.map((note, i) =>
+                    <Note key={i} note={note} />
+                )}
+            </ul>
+            <form onSubmit={addNote}>
+                <input
+                    value={newNote}
+                    onChange={handleNoteChange}
+                />
+                <button type="submit">save</button>
             </form>
-            <h2>Numbers</h2>
-      
         </div>
     )
 }
