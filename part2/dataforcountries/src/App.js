@@ -14,7 +14,6 @@ const App = () => {
     return (
         <div>
             <Filter countries ={countries}/>
-
         </div>
     )
 }
