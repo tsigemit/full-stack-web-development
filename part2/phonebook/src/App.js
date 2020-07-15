@@ -3,9 +3,9 @@ import axios from 'axios'
 import Persons from './components/Persons'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
+import contacts from './services/persons'
 
 const App = () => {
-    const baseUrl = 'http://localhost:3001/persons'
     const [persons, setPersons] = useState([])  
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
@@ -17,11 +17,15 @@ const App = () => {
     const handleOnChangeNumber = (event) => {
     setNewNumber(event.target.value)
 }
-   const request= () => {
-        axios.get(baseUrl).then(response => {
-            setPersons(response.data)})
-    }
-    useEffect(request,[])
+
+    useEffect(() => {
+        contacts
+            .getContacts()
+            .then(initialContacts => {
+                setPersons(initialContacts)
+            })
+    }, [])
+
     const addPeson = (event) => {
     event.preventDefault()
     const nameObject = {
@@ -29,7 +33,7 @@ const App = () => {
         number: newNumber,
         id:persons.length+1
     }
-     axios.post(baseUrl, nameObject).then(response => response.data)
+     contacts.create(nameObject)
     if (persons.find(peson => peson.name === newName))
         alert(`${newName} is already added to phonebook`)
     else
