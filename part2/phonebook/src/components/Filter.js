@@ -10,15 +10,16 @@ const Filter = ({ persons }) => {
         setSearchByName(filtered)
     }
     
+    
     return (
         <div>
             Filter shown with: <input value={search}
                 onChange={handleOnChangeSearch} />
-            {searchByName.map(person => {
+           {(search) ? searchByName.map(person => {
                 return (
                     <p key={person.name}>{person.name} {person.number}</p>
                 )
-            })}
+            }):null}
         </div>
     )
 }
