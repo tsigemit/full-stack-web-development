@@ -1,9 +1,9 @@
-require('dotenv').config()
 const express = require('express')
 var morgan = require('morgan')
 const app = express()
-const cors = require('cors')
+require('dotenv').config()
 const Person = require('./models/contacts')
+const cors = require('cors')
 
 app.use(cors())
 app.use(express.json())
@@ -19,17 +19,35 @@ app.use(morgan((tokens, req, res) => {
         req.method === 'POST' ? JSON.stringify(req.body) : ''
     ].join(' ')
 }))
-
+//get list of all contacts
 app.get('/api/persons', (request, response) => {
-    Person.find({}).then(notes => {
-        response.json(notes)
+    Person.find({}).then(persons => {
+        response.json(persons.map(person => person.toJSON()))
     })
 })
-
-app.get('/api/persons/:id', (request, response) => {
-    Person.findById(request.params.id).then(note => {
-        response.json(note)
-    })
+//Get info of the contacts
+app.get('/info', (req, res) => {
+    const timestamp = new Date().toString();
+    let count = 0
+    Person.find({}).then(persons => {
+        persons.map(person => {
+            if(person.id)
+               count++;
+          })
+        res.send(`<b>Phonebook has info for ${count} people <br /><br /> ${timestamp}</b>`)
+    })   
+})
+//get contact by id
+app.get('/api/persons/:id', (request, response, next) => {
+    Person.findById(request.params.id)
+        .then(person => {
+            if (person) {
+                response.json(person.toJSON())
+            } else {
+                response.status(404).end()
+            }
+        })
+        .catch(error => next(error))
 })
 
 app.post('/api/persons', (request, response) => {
@@ -46,12 +64,55 @@ app.post('/api/persons', (request, response) => {
         number:number
     })
 
-    newContact.save().then(savedNote => {
-        response.json(savedNote)
+    newContact.save().then(savedContact => {
+        response.json(savedContact)
     })
 })
 
+app.put('/api/persons/:id', (request, response, next) => {
+    const body = request.body
+    const newContact = {
+        name: body.name,
+        number: body.number
+    }
 
+    Person.findByIdAndUpdate(request.params.id, newContact, { new: true })
+        .then(updatedContact => {
+            response.json(updatedContact.toJSON())
+        })
+        .catch(error => next(error))
+})
+
+app.delete('/api/persons/:id', (request, response, next) => {
+    Person.findByIdAndRemove(request.params.id)
+        .then(result => {
+            response.status(204).end()
+        })
+        .catch(error => next(error))
+})
+
+const unknownEndpoint = (request, response) => {
+    response.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+    console.error(error.message)
+    if (error.name === 'CastError' && error.kind == 'ObjectId') {
+        return response.status(400).send({ error: 'malformatted id' })
+    }
+
+    next(error)
+}
+
+app.use(errorHandler)
+
+const PORT = process.env.PORT
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`)
+})
+// For REST and Express
 // let persons = [
 //         {
 //             "name": "Arto Hellas",
@@ -134,7 +195,3 @@ app.post('/api/persons', (request, response) => {
 //     }
 // })
 
-const PORT =process.env.PORT
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
-})
