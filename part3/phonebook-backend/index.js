@@ -1,4 +1,5 @@
-require('dotenv').config({ path: '.env' });
+/* eslint-disable no-undef */
+require('dotenv').config({ path: '.env' })
 const express = require('express')
 var morgan = require('morgan')
 const app = express()
@@ -29,16 +30,16 @@ app.get('/api/persons', (request, response) => {
 })
 //Get info of the contacts
 app.get('/info', (req, res, next) => {
-    const timestamp = new Date().toString();
+    const timestamp = new Date().toString()
     let count = 0
     Person.find({}).then(persons => {
         persons.map(person => {
             if(person.id)
-               count++;
-          })
+                count++
+        })
         res.send(`<b>Phonebook has info for ${count} people <br /><br /> ${timestamp}</b>`)
-    }) 
-        .catch(error => next(error))  
+    })
+        .catch(error => next(error))
 })
 //get contact by id
 app.get('/api/persons/:id', (request, response, next) => {
@@ -54,12 +55,12 @@ app.get('/api/persons/:id', (request, response, next) => {
 })
 
 app.post('/api/persons', (request, response,next) => {
-      const name = request.body.name
-      const number = request.body.number
-     if (name === undefined) 
-    return response.status(400).json({
-        error: 'Name is missing'
-    })
+    const name = request.body.name
+    const number = request.body.number
+    if (name === undefined)
+        return response.status(400).json({
+            error: 'Name is missing'
+        })
     else if(number === undefined)
         return response.status(400).json({
             error: 'Number is missing'
@@ -75,26 +76,26 @@ app.post('/api/persons', (request, response,next) => {
         .then(savedAndFormattedContact => {
             response.json(savedAndFormattedContact)
         })
-        .catch(error => next(error)) 
+        .catch(error => next(error))
 })
 
 app.put('/api/persons/:id', (request, response,next) => {
     const body = request.body
-  Person.findOne({_id:request.params.id})
-  .then((contactToBeUpdated) => {
-        contactToBeUpdated.name= body.name
-        contactToBeUpdated.number= body.number
-        contactToBeUpdated.save()
-                          .then(() => {
-                              response.json(contactToBeUpdated.toJSON())
-                            })
-                            .catch(error => next(error))
-})     
+    Person.findOne({ _id:request.params.id })
+        .then((contactToBeUpdated) => {
+            contactToBeUpdated.name= body.name
+            contactToBeUpdated.number= body.number
+            contactToBeUpdated.save()
+                .then(() => {
+                    response.json(contactToBeUpdated.toJSON())
+                })
+                .catch(error => next(error))
+        })
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
     Person.findByIdAndRemove(request.params.id)
-        .then(result => {
+        .then(() => {
             response.status(204).end()
         })
         .catch(error => next(error))
@@ -110,7 +111,7 @@ const errorHandler = (error, request, response, next) => {
     console.error(error.message)
     if (error.name === 'CastError') {
         return response.status(400).send({ error: 'malformatted id' })
-    } else if (error.name === 'ValidationError') { 
+    } else if (error.name === 'ValidationError') {
         return response.status(400).json({ error: error.message }) }
 
     next(error)
@@ -159,8 +160,8 @@ app.listen(PORT, () => {
 //     res.send(`<b>Phonebook has info for ${count} people <br /><br /> ${timestamp}</b>`)
 // })
 // app.post('/api/persons', (request, response) => {
-//     var name=request.body.name 
-//     var number=request.body.number 
+//     var name=request.body.name
+//     var number=request.body.number
 //    const newContact = persons.filter(person => (person.name===name))
 //          if(newContact.length>0)
 //              return response.status(400).json({
@@ -171,7 +172,7 @@ app.listen(PORT, () => {
 //                 error: 'Name or number is missing'
 //             })
 //         }
-    
+
 //     const person = {
 //         name,
 //         number,

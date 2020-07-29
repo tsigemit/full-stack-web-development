@@ -10,7 +10,8 @@
     "deploy": "git push heroku master && heroku open",
     "deploy:full": "npm run build:ui && git add . && git commit -m \"build in front-end\" && npm run deploy",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "logs:prod": "heroku logs --tail"
+    "logs:prod": "heroku logs --tail",
+    "lint": "eslint ."
   },
   "author": "Tsigabu Mebrahtu",
   "license": "MIT",
@@ -23,6 +24,8 @@
     "morgan": "^1.10.0"
   },
   "devDependencies": {
+    "eslint": "^7.5.0",
+    "eslint-plugin-react": "^7.20.5",
     "nodemon": "^2.0.4"
   }
 }
