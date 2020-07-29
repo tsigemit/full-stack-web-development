@@ -41,12 +41,17 @@ const App = () => {
             const replaceNumber = persons.filter(person => person.name === newName)
             let updatePerson = replaceNumber[0]
             updatePerson.number = newNumber
-            contacts.update(updatePerson.id, updatePerson).then(newContacts => {
+            contacts.update(updatePerson.id, updatePerson)
+                .then(newContacts => {
                 setPersons(persons.map(person => person.id !== updatePerson.id ? person : newContacts))
                 setSuccessMessage(`Updated ${newContacts.name}'s number`)
                 setTimeout(() => {
                     setSuccessMessage(null)
-                }, 3000)
+                }, 5000)
+            })
+            .catch(error => {
+                    setConfirmationMessage(error.response.data.error)
+                    setTimeout(() => {setConfirmationMessage(null)}, 5000)
             })
     }
 }
@@ -54,11 +59,17 @@ const App = () => {
     {
         setPersons(persons.concat(nameObject))
         contacts.create(nameObject)
-        setSuccessMessage(`Added ${newName}`)
-        setTimeout(() => {
-            setSuccessMessage(null)
-        }, 3000)
-        
+        .catch(error => {
+            console.log('print error');
+            setConfirmationMessage(error.response.data.error)
+            setTimeout(() => {
+                setConfirmationMessage(null)
+            }, 5000)
+            })
+            if(nameObject.name.length>2 && nameObject.number.length>7)   {
+                setSuccessMessage(`Added ${newName}`)
+                setTimeout(() => { setSuccessMessage(null) }, 5000)
+            }     
     }
    
 }
@@ -70,7 +81,7 @@ const App = () => {
                     setConfirmationMessage(`Information of ${person.name} has already been removed from the server`)
                     setTimeout(() => {
                         setConfirmationMessage(null)
-                    }, 3000)
+                    }, 5000)
                 })
             const filtered = persons.filter(pre => pre.id !== person.id)
             setPersons(filtered)
